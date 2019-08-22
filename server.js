@@ -1,6 +1,7 @@
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
+const https = require('https');
 // var WebSocketServer = require('ws').Server; 
 const app = express();
 
@@ -40,7 +41,15 @@ app.get('*', (req,res) => {
 
 });
 
+const httpsOptions = {
+    cert : fs.readFileSync((__dirname,'ssl/server.crt').toString()),
+    key : fs.readFileSync((__dirname,'ssl/server.key').toString())
+}
+https.createServer(httpsOptions, app)
+    .listen(4800, () => console.log('Example app listening on port 4800!'))
 
-app.listen( 4200, () => {
-    console.log("Listening at port 4200");
-});
+
+// app.listen( 4200, () => {
+//     console.log("Listening at port 4200");
+// });
+
