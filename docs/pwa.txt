@@ -1,0 +1,90 @@
+
+
+1. Manifest file
+This is enough to get u a app shell for the desktop.
+
+<link rel="manifest" href="manifest.json">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#db5945">
+<link rel="icon" sizes="192x192" href="nice-highres.png"> 
+
+{
+    "name": "PWA demo",
+    "short_name": "this is hortname",
+    "lang": "en",
+    "start_url": "./index.html",
+    "scope": "/",
+    "display": "fullscreen",
+    "theme_color": "#ffffff",
+    "background_color": "#000000",
+    "icons": [
+        
+       
+        {
+            "sizes": "192x192",
+            "src": "images/android-icon-192x192.png",
+            "type": "image/png"
+        },
+        {
+            "sizes": "512x512",
+            "src": "images/download.png",
+            "type": "image/png"
+        }
+    ]
+}
+
+
+
+short_name and/or name
+    You must provide at least the short_name or name property. If both are provided, short_name is used on the user's home screen, 
+    launcher, or other places where space may be limited. name is used in the app install prompt.
+
+
+start_url
+    The start_url tells the browser where your application should start when it is launched, and prevents the app from starting on 
+    whatever page the user was on when they added your app to their home screen.
+
+    Your start_url should direct the user straight into your app, rather than a product landing page.
+    Think about what the user will want to do once they open your app, and place them there.
+
+
+background_color
+    The background_color property is used on the splash screen when the application is first launched.
+
+display
+    You can customize what browser UI is shown when your app is launched. For example, you can hide the address bar and browser 
+    chrome. Or games may want to go completely full screen. 
+
+orientation
+    You can enforce a specific orientation, which is advantageous for apps that work in only one orientation, such as games. Use this selectively. Users prefer selecting the orientation.
+
+scope
+    The scope defines the set of URLs that the browser considers to be within your app, and is used to decide when the user 
+    has left the app. The scope controls the URL structure that encompasses all the entry and exit points in your web app. 
+    Your start_url must reside within the scope.
+
+
+
+
+A few other tips:
+
+    If you don't include a scope in your manifest, then the default implied scope is the directory that your web app manifest is served from.
+    The scope attribute can be a relative path (../), or any higher level path (/) which would allow for an increase in coverage of navigations in your web app.
+    The start_url must be in the scope.
+    The start_url is relative to the path defined in the scope attribute.
+    A start_url starting with / will always be the root of the origin.
+
+
+
+2. Redirect http traffic to https
+
+http.get('*', function(req, res) {  
+    // check if protocol is http then redirect
+    // have a middle ware for all this.
+    res.redirect('https://' + req.headers.host + req.url);
+
+})
+
+
+3. a fetch event handler is required for beforeinstallprompt to be fired.
+fetch event will be in sw.js

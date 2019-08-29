@@ -2,14 +2,57 @@
     <html>
         <head>
             <title>WebRTC</title>
-            <script defer src="script.js"></script>
+            <link rel="manifest" href="manifest.json">
+            <link rel="stylesheet" href="./style.css">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <meta name="theme-color" content="#db5945">
+            <!-- <link rel="icon" sizes="192x192" href="nice-highres.png">  for icon in the header/tab-->
+            <!-- <script defer src="script.js"></script> -->
             <!-- <script defer src="Rscript.js"></script> -->
+            <script defer src="webSocket.js"></script>
         </head>
 
         <body>
             <h1>WebRTC in making</h1>
+
+            <div id="chat">
+
+            </div>
+            <label>
+                Message : <input id="chatMessage" type="text" placeholder="Enter message">
+            </label>
+            <button id="sendButton">Send</button>
+            <br><br>
+            <label>
+                Room Name : <input id="roomName" type="text" placeholder="Enter Room Name">
+            </label>
+            <button id="connectButton">Connect</button>
+            <br><br>
+            <label>
+                File : <input id="file" type="file">
+            </label>
+            <button id="sendFile">Send File</button>
+
+
+            <div id="pwaBanner">
+                <h2>Install pwa app</h2>
+                <p>Lets have a native app</p>
+            </div>
         </body>
-        <video id="left" autoplay></video>
+
+
+
+
+
+
+
+
+
+
+
+
+
+        <!-- <video id="left" autoplay></video>
         <label>
             Left :<input id="leftInput" type="text">
         </label>
@@ -25,6 +68,6 @@
         </label>
         <button id="rightButton">Add</button><br>
         <br>
-        <button id="rightButtonInit">Start</button><br>
+        <button id="rightButtonInit">Start</button><br> -->
 
     </html>

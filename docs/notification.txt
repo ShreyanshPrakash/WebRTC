@@ -1,0 +1,76 @@
+
+
+Steps:
+
+1. get users permission.
+now this data will be attached to the app's service worker.
+Hence it does not change.
+
+Notification.requestPermission( status => { } )
+
+2. Check if u have the permission 
+Notification.permission === 'granted'
+
+3. SHow the Notification
+Notifications are shown on the registered service worker.
+So u need to get hand over the registered service worker and then on the registration object, call showNotification()
+navigator.serviceWorker.getRegistration().then( reg => {
+            console.log( reg );
+            reg.showNotification( 'Hello world', {
+                body: 'This is testing',
+                vibrate: [200,100,200,100],
+                tag: "vibration"
+            })
+        })
+
+if (permission === "granted") {
+        var notification = new Notification("Hi there!"); // without serviceWorker
+      }
+
+Notification.permission Read only
+A string representing the current permission to display notifications. Possible values are:
+denied — The user refuses to have notifications displayed.
+granted — The user accepts having notifications displayed.
+default — The user choice is unknown and therefore the browser will act as if the value were denied.
+
+4. User interaction
+
+
+
+
+
+Notification.requestPermission( status => {
+
+
+    if( Notification.permission === 'granted' ){
+        navigator.serviceWorker.getRegistration().then( reg => {
+            console.log( reg );
+            reg.showNotification( 'Hello world', {
+                body: 'This is testing',
+                vibrate: [200,100,200,100],
+                tag: "vibration",
+                data: {name:"sp",age:53},
+                image: "/images/android-icon-192x192.png",
+                icon: "/images/android-icon-192x192.png",
+                actions: [
+                    {
+                        action: "click", title: "click", icon: "/images/android-icon-192x192.png"
+                    },
+                    {
+                        action: "close", title: "close", icon: "/images/android-icon-192x192.png"
+                    },
+                    {
+                        action: "open", title: "open", icon: "/images/android-icon-192x192.png"
+                    }
+                ]
+            })
+        })
+    }
+})
+
+// atmost u can add many actions but only two will be show.
+// each action must have action,title and icon
+
+// all the actions will be heard in sw "notificationclick" event.
+// filter the action value to decide.
+

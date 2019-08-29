@@ -1,0 +1,64 @@
+
+<input id="file" type="file>
+
+let file = document.getElementById('file');
+
+file.onchange = event => {
+
+    let uiDate = event.target.files[0];  // get the file to read
+    let fileReader = new FileReader();  // instantiate fileReader
+    fileReader.readAsText( uiData );    // read file as text.... can be blob, arrayBuffer,binary etc
+
+    fileReader.onload = event => {      // attach event to fileReader. Onload get the result
+
+        console.log( fileReader.result );
+
+    }
+}
+
+
+fileReader.onprogress = event => console.log( Number( event.total % event.loaded ));
+
+
+---------------------
+
+- readAsDataURL() : consumes and file or blob(binary large object) and generates a base64 encoded data string.
+        This data url can be used to display thumbnail preview in web and mobile browsers locally.
+
+        let fileReader = new FileReader();
+        fileReader.readAsDataURL( fileData );
+        fileReader.onload = event => {
+
+            ws.send( JSON.stringify( {
+                image: true,
+                buffer:  fileReader.result  // this is the base64 data that u need to send or use to show thumbnail
+            } ) );
+
+    }
+
+        const img = document.createElement('img');  // create an mimage node and add the buffer data as src of image.
+        img.src = message.buffer;
+        chat.appendChild( img );
+
+
+        when u will read the file, it will automatically conatin
+        'data:image/jpeg;base64.......bufferData, like so info. in the starting.
+    Now say u have a very large file, in that case u wont be sending the whole data at a time.
+    In such case,u will set the 'data:image/jpeg;base64' to the source so that node can be created for this type,
+    then all the data can come in as buffer that u will keep adding.
+
+
+- readAsText( file, encoding ): to read file or blob with specified encoding
+
+- readAsBinaryString( file ): Gets the raw binary data from any file or blob
+
+- readAsArrayBuffer( file ): Generates an ArrayBuffer via reading a file and blob object.It returns
+        Int8,Uint8 and byteLength arrays.
+        This is helpfull when converting between extensions
+
+        let bytes = new Int8Array( fileReader.result );
+            this is how u will read the different types from the result.
+
+
+Read only image :
+    <input type="file" accept="image/*">

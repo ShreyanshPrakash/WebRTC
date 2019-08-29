@@ -1,0 +1,136 @@
+client side is very simple.
+
+const ws = new webSocket('ws://localhost:4200/path);
+
+ws.onopen = event => {}
+
+ws.onmessage = msg => {}
+
+ws.onerror = err => {}
+
+ws.onclose = event => {}
+
+
+ws.send()   // string or array buffer.So use JSON.stringify
+            // to send data to backend
+
+
+
+// server side
+
+u will need to create a http server as express i think doesn not handle upgrade request.
+When that new wsebsocket is called with the url, it will make an upgrade request to the backend.
+U need to handle that first.
+
+===============
+const https = require('https');
+const express = require('express');
+conbst ws = require('ws');
+
+const app = express();  // create express app
+const httpServer = https.createServer( httpsOptions, app ); // add express app to https, use ssl for httpOptions
+const ws = new ws.server({ server: httpServer });   // pass the httpsServer to websocket.
+
+httpsServer.listen( 4200, () => console.log('Running') );
+================
+Above is the basic layout for the websocket application.
+
+now we can listen to connection event for ws
+
+ws.on( 'connection', ( socket ) => {
+
+    ws.on('message' , msg => {
+        socket.send('');
+    })
+
+    ws.on('error' err =< {} )
+
+    ws.on('disconnect', event => {} )
+
+})
+
+ws is the instace that will have all the sockets/clients that is connecting.
+So u can iterate ober "ws.clients.map" to broadcast the message
+
+socket represents each individual client connection.
+
+
+The above setup is for global.For all the sockets/client that connects to the ws, will be open to all.
+Now, we will learn how to create room based web sockets.
+=============================
+
+now on top of the above, if u want to create chatrooms, then u will have to create separete ws instance for each chatroom.
+SO in the upgrade event on httpsServer, check for the chatroom connection and based on it, connect to that ws
+
+
+
+const wsHome = new WebSocketServer.Server({
+    noServer: true  // for chatRoom, dont attach any server.Use upgrade event to handle websocket.So check for protocol
+}) 
+
+httpsServer.on( 'upgrade' , ( req, socket, head ) => {
+
+    switch ( url.parse( req.url ).pathName ){
+
+        case '/charRoom1' :   handleChatRoom( wsHome );  // name of the chatRoom will be in the url requested
+        ws1.handelUpgrade( req, socket, head, wss => {  // i need 'wss' hence use ws1.handelUpgrade
+            ws1.emit( 'clientConnect', wss );   // emit any event that u want to handle
+        });
+        // this is how u can handle chatRoome in ws.
+    }
+})
+
+function handleChatRoom( chatRoomName ){    // this will attach the necessary events to each chatRoom created.
+
+    chatRoom.on( 'customeEvent', socket => {
+
+        socket.on('message', msg => {} );
+
+    })
+}
+
+=======================================
+
+Now, i logged the chatRoom/ ws global object.
+Its of below structure.
+
+{
+    clients: {},
+    options {}, // config for this ws
+    _events: {} // this is where u can attach events like that of socket.io
+}
+
+
+=======================================================================
+
+Websocket has a buffer limit.SO how can u send the files that have more bytes than the limit.
+
+For now, i have create a code,using for loop that will keep on sending in chunks.
+
+for( let i = 0; i < fileReader.result.length; i++ ){
+                if( data.length < sizeLim ){
+                    data = data + fileReader.result.charAt( i );
+                }else{
+                    ws.send( JSON.stringify( {
+                        video: true,
+                        buffer: data
+                    }));
+                    data = '';
+                    data = data + fileReader.result.charAt( i );
+                }
+            }
+
+But this is not streaming i think.I have not found a better solution.
+
+So i think this is how, whatspp works.
+
+If the file is of size less than the buffer limit then use websocket and send the data.
+For bigger files, send the event only to the users and upload the file to the backend.
+If the users choose to download the file, then only push the file to the users and delete from backend.
+
+Or do this for all files.
+
+This approach will crash thw whole browser and is not at all good......i mean using websocket for sending big files.
+Use http only.Send the data/file as upload and then le the backend handle the file download when user chooses so.
+
+Its good also for bandwidht of server as well as client.

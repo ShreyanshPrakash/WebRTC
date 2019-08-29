@@ -1,0 +1,176 @@
+Holy Grail :
+
+When u will print the events of serviceworker...mainly beforeInstallPrompt and notificationclick
+u will get the whole system referecne.
+Go to target and u will get info of the targetted client with deep info like clipboard .
+So basically, the window object is then in the target object as there u will get all the methods.....onclick and etc.
+
+
+Wait Until
+One of the things to understand about service workers is that you have little control over when the service worker code is going to run. The browser decides when to wake it up and when to terminate it. The only way you can tell the browser, "Hey, I'm super busy doing important stuff", is to pass a promise into the event.waitUntil() method. With this, the browser will keep the service worker running until the promise you passed in has settled.
+
+With push events, there is an additional requirement that you must display a notification before the promise you passed in has settled.
+
+Here's a basic example of showing a notification:
+
+self.addEventListener('push', function(event) {
+  const promiseChain = self.registration.showNotification('Hello, World.');
+
+  event.waitUntil(promiseChain);
+});
+
+
+
+
+Blog Topic :
+
+1. Specify clearly wich events/code will be in the sw and which in the parent js file
+2. show the object structure of the events.
+3. clearly mention all the requirements of the pwa in one place with a zip file that will have a 
+manifest file,index.html file,ws.js,script.js,style.css and icons.A kit start tool
+4. "beforeinstallprompt" event will get triggered everytime till u have that application registered.
+5. fetch event will be called for all the resource request even before "beforeinstallprompt"
+mind you, sw is not there for just pwa, so these events will still fire.
+6. when to register service worker for pwa
+7. HOw to know if app is lauched from pwa :
+@media all and (display-mode: standalone) {
+  body {
+    background-color: yellow;
+  }
+}
+if (window.navigator.standalone === true) {
+  console.log('display-mode is standalone');
+}
+8. HOw to prompt :
+The key for you to remember is capturing the beforeinstallprompt event and controlling the process.
+
+    Listen for the beforeinstallprompt event
+    Notify the user your app can be installed with a button or other element that will generate a user gesture event.
+    Show the prompt by calling prompt() on the saved beforeinstallprompt event.
+    
+9. PWAs are only supported on Firefox for Android.
+
+10. Go to chrome://apps to see your app.
+
+11. It is fine if you dont cache anything in install event.
+when u will have fetch event, there u will cache all that is not there in cache right.
+SO even if cache is empty, new files will get added as user will browse.
+12. Now, it might happen that u change the content of the file but, the link or url is same.
+in such case, service worker will not cache the new file as the url is still the same and hence it wont go to the 
+network to fecth the new file.So in this case either use network first strategy or if we use any bundlers,
+they automatically attach the hash of the file to the filename.Hence if content is changed, then the url will also change 
+as the new will will be added to link and script tags in index.html
+
+12. in incongnito, pwa prompts wont work.
+
+13. caches.open returns promise.Hence use resolve or then or await to get the cache reference
+
+14. After u have added a cache in the install event, it will take effect when u reopen the window or tab.
+
+15. If u are making any changes to the cache, then only u need to open it else for match, no need to open.
+
+Steps :
+
+1. Add/register serviceWorker
+2. Prompt
+3. install
+4. fetch/cache
+
+
+Summary code :
+
+1. for service worker, call a method that will register the sw.
+navigator.serviceWorker.register('./sw.js).then( event => {
+    console.log('registered');
+})
+
+2. Prompt will be from windo side not sw, so the handler should not be is ws.js as u cannot access window inside sw.
+window.addEventListener('beforeInstallPrompt', event => {
+    // cretae a popup and all such info.
+    // present to the user.
+})
+// this event will be fired only if :
+- manifest file with al necessaryu info.
+- sw.js is registered.
+- sw has a fetch event handler ready.
+- meta and link tags in index.html.
+- https/localhost and redirect http to https.
+
+3.
+
+
+
+-------------------------------------------------------------------------------------------
+Adding service worker is like, just having any JS file that will act as service worker.
+Now thery have some additional privelage.
+
+// in the host/parent file that will register service worker
+async function installServiceWorker(){
+
+    if( 'serviceWorker' in navigator ){
+        try{
+            let serviceWorker = await navigator.serviceWorker.register('./service.worker.js');
+            console.log( serviceWorker );       // this has a lot of properties now.Discussed below
+        }catch( err ){
+            console.log( err )
+        }
+    }else{
+        console.log('Service worker not supported');
+    }
+
+}
+
+// so after registration of service worker, an object is returned
+
+-pushManager
+-paymentManager
+-sync(syncManager)
+
+-- active
+-- installing
+
+
+
+IMP :
+(PS. I think I know what the problem is: as of recent versions of Chrome, your service worker is required to have a 
+fetch handler so it can work offline. Lighthouse would tell you this.)
+
+
+// pwa prompt
+var deferredPrompt;
+
+window.addEventListener('beforeinstallprompt', function (e) {
+  // Prevent Chrome 67 and earlier from automatically showing the prompt
+  e.preventDefault();
+  // Stash the event so it can be triggered later.
+  deferredPrompt = e;
+
+  showAddToHomeScreen();
+
+});
+
+function showAddToHomeScreen() {
+
+  var a2hsBtn = document.querySelector(".ad2hs-prompt");
+
+  a2hsBtn.style.display = "block";
+
+  a2hsBtn.addEventListener("click", addToHomeScreen);
+
+}
+
+function addToHomeScreen() {  var a2hsBtn = document.querySelector(".ad2hs-prompt");  // hide our user interface that shows our A2HS button
+  a2hsBtn.style.display = 'none';  // Show the prompt
+  deferredPrompt.prompt();  // Wait for the user to respond to the prompt
+  deferredPrompt.userChoice
+    .then(function(choiceResult){
+
+  if (choiceResult.outcome === 'accepted') {
+    console.log('User accepted the A2HS prompt');
+  } else {
+    console.log('User dismissed the A2HS prompt');
+  }
+
+  deferredPrompt = null;
+
+});}
